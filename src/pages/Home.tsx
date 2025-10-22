@@ -90,11 +90,11 @@ const Home = () => {
     },
     {
       id: 3,
-      title: "Expert",
-      highlight: "Services",
-      description: "Comprehensive ceiling solutions for all spaces",
-      buttonText: "Our Services",
-      link: "/services",
+      title: "Stunning",
+      highlight: "Gallery",
+      description: "Explore our collection of beautiful ceiling transformations",
+      buttonText: "View Gallery",
+      link: "/gallery",
       background: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=2070&auto=format&fit=crop",
     },
     {
@@ -535,53 +535,77 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services - Image Focused */}
-      <section className="py-32">
+      {/* Services Section - Beautiful Grid */}
+      <section className="py-32 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20 animate-fade-in">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              Our Expertise
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
+              <Star className="w-4 h-4 text-primary fill-primary" />
+              <span className="text-primary text-sm font-medium tracking-wide">Our Services</span>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 font-playfair">
+              Comprehensive Ceiling <span className="text-primary">Solutions</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-              Specialized ceiling solutions for every space
+              From concept to completion, we deliver excellence in every ceiling design
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {[
-              { img: livingRoomImage, title: "Residential" },
-              { img: bedroomImage, title: "Luxury Living" },
-              { img: officeImage, title: "Corporate" }
+              { name: "POP False Ceiling", slug: "pop-false-ceiling" },
+              { name: "Gypsum False Ceiling", slug: "gypsum-false-ceiling" },
+              { name: "Simple Ceiling Designs", slug: "simple-ceiling-designs" },
+              { name: "Wall Panel & Wall Design Work", slug: "wall-panel-design" },
+              { name: "Ceiling Partitions & Room Dividers", slug: "ceiling-partitions" },
+              { name: "Commercial False Ceiling Installation", slug: "commercial-ceiling" },
+              { name: "Residential False Ceiling Design", slug: "residential-ceiling" },
+              { name: "Ceiling Lighting & Cove Light Design", slug: "ceiling-lighting" },
+              { name: "3D Ceiling Designs", slug: "3d-ceiling-designs" },
+              { name: "Modern Office Ceiling Solutions", slug: "office-ceiling" },
+              { name: "PVC Ceiling Installation", slug: "pvc-ceiling" },
+              { name: "Acoustic & Soundproof Ceilings", slug: "acoustic-ceiling" },
+              { name: "Ceiling Repair & Renovation", slug: "ceiling-repair" },
+              { name: "Luxury Ceiling Design for Homes & Offices", slug: "luxury-ceiling" }
             ].map((service, index) => (
-              <div 
-                key={index}
-                className="group relative overflow-hidden rounded-none animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
+              <Link 
+                key={index} 
+                to={`/services/${service.slug}`}
+                className="group"
               >
-                <div className="aspect-[4/5] overflow-hidden">
-                  <img 
-                    src={service.img} 
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div>
-                    <h3 className="text-3xl font-bold text-white mb-2">{service.title}</h3>
-                    <Link to="/services" className="text-primary flex items-center gap-2 hover:gap-3 transition-all">
-                      Explore
-                      <ArrowRight size={18} />
-                    </Link>
+                <div className="relative h-full bg-card border border-border rounded-xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {/* Hover Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  
+                  <div className="relative z-10">
+                    {/* Icon */}
+                    <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-colors duration-300">
+                      <CheckCircle className="w-6 h-6 text-primary" />
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors font-playfair">
+                      {service.name}
+                    </h3>
+
+                    {/* CTA */}
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-primary group-hover:gap-3 transition-all">
+                      <span>Learn More</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
           <div className="text-center mt-16">
-            <Link to="/services">
-              <Button size="lg" variant="outline" className="text-lg">
-                View All Services
+            <Link to="/contact">
+              <Button size="lg" className="text-lg px-10 py-6 bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
+                Get Free Consultation
+                <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
             </Link>
           </div>
