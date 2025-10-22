@@ -94,6 +94,15 @@ export interface WordPressGallery {
   };
 }
 
+export interface WordPressPricingGallery {
+  id: number;
+  title: string;
+  gallery: Array<{
+    url: string;
+    name: string;
+  }>;
+}
+
 export const wordpressAPI = {
   // Projects
   async getProjects(): Promise<WordPressProject[]> {
@@ -149,6 +158,13 @@ export const wordpressAPI = {
   async getGalleryBySlug(slug: string): Promise<WordPressGallery> {
     const response = await fetch(`${WORDPRESS_API_BASE}/galleries/slug/${slug}`);
     if (!response.ok) throw new Error('Failed to fetch gallery');
+    return response.json();
+  },
+
+  // Pricing Galleries
+  async getPricingGalleries(): Promise<{ data: WordPressPricingGallery[] }> {
+    const response = await fetch(`${WORDPRESS_API_BASE}/pricings`);
+    if (!response.ok) throw new Error('Failed to fetch pricing galleries');
     return response.json();
   },
 };

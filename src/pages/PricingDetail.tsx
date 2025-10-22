@@ -3,8 +3,10 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
+import { wordpressAPI } from "@/lib/wordpress-api";
+import { useEffect, useState } from "react";
 
-// Import images
+// Import images (fallback)
 import bedroomCeiling from "@/assets/bedroom-ceiling.jpg";
 import livingRoomCeiling from "@/assets/living-room-ceiling.jpg";
 import kitchenCeiling from "@/assets/kitchen-ceiling.jpg";
@@ -14,6 +16,7 @@ import restaurantCeiling from "@/assets/restaurant-ceiling.jpg";
 
 const PricingDetail = () => {
   const { id } = useParams();
+  const [dynamicImages, setDynamicImages] = useState<Record<string, Array<{ src: string; alt: string }>>>({});
 
   const pricingData: Record<string, any> = {
     basic: {
@@ -80,6 +83,35 @@ const PricingDetail = () => {
       accentColor: "text-accent-foreground"
     }
   };
+
+  useEffect(() => {
+    const fetchPricingGalleries = async () => {
+      try {
+        const response = await wordpressAPI.getPricingGalleries();
+        const galleries: Record<string, Array<{ src: string; alt: string }>> = {};
+        
+        response.data.forEach((item) => {
+          let key = '';
+          if (item.title === 'Essential') key = 'basic';
+          else if (item.title === 'Premium') key = 'medium';
+          else if (item.title === 'Luxury') key = 'high';
+          
+          if (key) {
+            galleries[key] = item.gallery.map(img => ({
+              src: img.url,
+              alt: img.name
+            }));
+          }
+        });
+        
+        setDynamicImages(galleries);
+      } catch (error) {
+        console.error('Failed to fetch pricing galleries:', error);
+      }
+    };
+
+    fetchPricingGalleries();
+  }, []);
 
   const tier = pricingData[id as string];
 
@@ -177,7 +209,7 @@ const PricingDetail = () => {
             </h2>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tier.images.map((image: any, index: number) => (
+              {(dynamicImages[id as string] || tier.images).map((image: any, index: number) => (
                 <div 
                   key={index}
                   className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 animate-fade-in hover:-translate-y-2"
