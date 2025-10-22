@@ -1,7 +1,9 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { ArrowLeft, CheckCircle, Sparkles, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
 
 // Import placeholder images
@@ -13,6 +15,8 @@ import commercialImage from "@/assets/commercial-ceiling.jpg";
 const ServiceDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   // Service data mapping
   const servicesData: Record<string, {
@@ -221,10 +225,17 @@ const ServiceDetail = () => {
     );
   }
 
+  // Convert images array to match ImageLightbox format
+  const lightboxImages = service.images.map((img, idx) => ({
+    id: String(idx),
+    image_url: img,
+    title: `${service.name} ${idx + 1}`
+  }));
+
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[60vh] flex items-center pt-24 pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src={service.images[0]} 
@@ -234,7 +245,7 @@ const ServiceDetail = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50" />
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-6 relative z-10">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/")}
@@ -249,10 +260,10 @@ const ServiceDetail = () => {
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-primary text-sm font-medium">Premium Service</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight font-playfair">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight font-playfair">
               {service.name}
             </h1>
-            <p className="text-xl text-gray-200 leading-relaxed mb-8">
+            <p className="text-lg text-gray-200 leading-relaxed mb-8">
               {service.description}
             </p>
             <div className="flex flex-wrap gap-4">
@@ -275,8 +286,8 @@ const ServiceDetail = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center font-playfair">
               Service <span className="text-primary">Features</span>
@@ -301,24 +312,28 @@ const ServiceDetail = () => {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12 animate-fade-in">
               <h2 className="text-4xl md:text-5xl font-bold mb-4 font-playfair">
                 Project <span className="text-primary">Gallery</span>
               </h2>
               <p className="text-muted-foreground text-lg">
-                See our work in action
+                See our work in action - click any image to view larger
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {service.images.map((image, index) => (
                 <Card
                   key={index}
-                  className="group overflow-hidden border-border hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 animate-scale-in"
+                  className="group overflow-hidden border-border hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 cursor-pointer animate-scale-in"
                   style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => {
+                    setLightboxIndex(index);
+                    setLightboxOpen(true);
+                  }}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img 
@@ -326,8 +341,9 @@ const ServiceDetail = () => {
                       alt={`${service.name} ${index + 1}`}
                       className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <p className="text-white font-semibold">View Project Details</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
+                      <p className="text-white font-semibold text-lg mb-2">Click to view</p>
+                      <Sparkles className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                 </Card>
@@ -337,15 +353,25 @@ const ServiceDetail = () => {
         </div>
       </section>
 
+      {/* Image Lightbox */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={lightboxImages}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setLightboxIndex}
+        />
+      )}
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 font-playfair">
               Ready to Get Started?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Contact Muhammad Ishaq for a free consultation and quote
+              Contact us for a free consultation and quote
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Button 

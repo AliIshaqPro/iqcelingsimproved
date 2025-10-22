@@ -9,6 +9,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import ServiceDetail from "./pages/ServiceDetail";
+import PricingDetail from "./pages/PricingDetail";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Gallery from "./pages/Gallery";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/services/:slug" element={<ServiceDetail />} />
+              <Route path="/pricing/:tier" element={<PricingDetail />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
               <Route path="/gallery" element={<Gallery />} />

@@ -553,40 +553,50 @@ const Home = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {[
-              { name: "POP False Ceiling", slug: "pop-false-ceiling" },
-              { name: "Gypsum False Ceiling", slug: "gypsum-false-ceiling" },
-              { name: "Simple Ceiling Designs", slug: "simple-ceiling-designs" },
-              { name: "Wall Panel & Wall Design Work", slug: "wall-panel-design" },
-              { name: "Ceiling Partitions & Room Dividers", slug: "ceiling-partitions" },
-              { name: "Commercial False Ceiling Installation", slug: "commercial-ceiling" },
-              { name: "Residential False Ceiling Design", slug: "residential-ceiling" },
-              { name: "Ceiling Lighting & Cove Light Design", slug: "ceiling-lighting" },
-              { name: "3D Ceiling Designs", slug: "3d-ceiling-designs" },
-              { name: "Modern Office Ceiling Solutions", slug: "office-ceiling" },
-              { name: "PVC Ceiling Installation", slug: "pvc-ceiling" },
-              { name: "Acoustic & Soundproof Ceilings", slug: "acoustic-ceiling" },
-              { name: "Ceiling Repair & Renovation", slug: "ceiling-repair" },
-              { name: "Luxury Ceiling Design for Homes & Offices", slug: "luxury-ceiling" }
+              { name: "POP False Ceiling", slug: "pop-false-ceiling", image: livingRoomImage },
+              { name: "Gypsum False Ceiling", slug: "gypsum-false-ceiling", image: officeImage },
+              { name: "Simple Ceiling Designs", slug: "simple-ceiling-designs", image: bedroomImage },
+              { name: "Wall Panel & Wall Design Work", slug: "wall-panel-design", image: commercialImage },
+              { name: "Ceiling Partitions & Room Dividers", slug: "ceiling-partitions", image: officeImage },
+              { name: "Commercial False Ceiling Installation", slug: "commercial-ceiling", image: commercialImage },
+              { name: "Residential False Ceiling Design", slug: "residential-ceiling", image: livingRoomImage },
+              { name: "Ceiling Lighting & Cove Light Design", slug: "ceiling-lighting", image: bedroomImage },
+              { name: "3D Ceiling Designs", slug: "3d-ceiling-designs", image: restaurantImage },
+              { name: "Modern Office Ceiling Solutions", slug: "office-ceiling", image: officeImage },
+              { name: "PVC Ceiling Installation", slug: "pvc-ceiling", image: bedroomImage },
+              { name: "Acoustic & Soundproof Ceilings", slug: "acoustic-ceiling", image: officeImage },
+              { name: "Ceiling Repair & Renovation", slug: "ceiling-repair", image: livingRoomImage },
+              { name: "Luxury Ceiling Design for Homes & Offices", slug: "luxury-ceiling", image: restaurantImage }
             ].map((service, index) => (
               <Link 
                 key={index} 
                 to={`/services/${service.slug}`}
                 className="group"
               >
-                <div className="relative h-full bg-card border border-border rounded-xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 animate-fade-in"
+                <div className="relative h-full bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl z-10" />
                   
-                  <div className="relative z-10">
+                  {/* Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={service.image} 
+                      alt={service.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  </div>
+                  
+                  <div className="relative z-10 p-6">
                     {/* Icon */}
-                    <div className="mb-4 p-3 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-colors duration-300">
-                      <CheckCircle className="w-6 h-6 text-primary" />
+                    <div className="mb-3 p-2 bg-primary/10 rounded-lg w-fit group-hover:bg-primary/20 transition-colors duration-300">
+                      <CheckCircle className="w-5 h-5 text-primary" />
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors font-playfair">
+                    <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors font-playfair">
                       {service.name}
                     </h3>
 
@@ -628,10 +638,10 @@ const Home = () => {
               <Award className="w-5 h-5 text-primary" />
               <span className="text-primary font-semibold tracking-wider text-sm">WHY CHOOSE US</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-ivory to-ivory/80 bg-clip-text text-transparent">
-              The IQ CEILINGS Difference
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 font-playfair">
+              The <span className="text-primary">IQ CEILINGS</span> Difference
             </h2>
-            <p className="text-xl text-ivory/70 font-light leading-relaxed">
+            <p className="text-xl text-muted-foreground font-light leading-relaxed">
               Experience unparalleled excellence with our commitment to quality, craftsmanship, and client satisfaction
             </p>
           </div>
@@ -666,7 +676,7 @@ const Home = () => {
             ].map((feature, index) => (
               <div 
                 key={index}
-                className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 hover:bg-card/70 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-primary/10"
+                className="group relative bg-card border border-border rounded-2xl p-8 hover:bg-card transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-primary/10"
               >
                 {/* Icon */}
                 <div className="mb-6 p-4 bg-primary/10 rounded-2xl w-fit group-hover:bg-primary/20 transition-colors duration-300">
@@ -676,17 +686,17 @@ const Home = () => {
                 </div>
 
                 {/* Title & Description */}
-                <h3 className="text-2xl font-bold text-ivory mb-4 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors duration-300 font-playfair">
                   {feature.title}
                 </h3>
-                <p className="text-ivory/70 mb-6 leading-relaxed font-light">
+                <p className="text-muted-foreground mb-6 leading-relaxed">
                   {feature.description}
                 </p>
 
                 {/* Features List */}
                 <ul className="space-y-3">
                   {feature.features.map((item, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3 text-sm text-ivory/60 group-hover:text-ivory/80 transition-colors duration-300">
+                    <li key={featureIndex} className="flex items-center gap-3 text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">
                       <div className="w-1.5 h-1.5 bg-primary rounded-full group-hover:scale-125 transition-transform duration-300" />
                       {item}
                     </li>
@@ -700,15 +710,15 @@ const Home = () => {
           </div>
 
           {/* Bottom CTA */}
-          <div className="text-center mt-16 pt-12 border-t border-border/50">
+          <div className="text-center mt-16 pt-12 border-t border-border">
             <div className="max-w-2xl mx-auto">
-              <p className="text-ivory/70 text-lg mb-8 font-light">
+              <p className="text-muted-foreground text-lg mb-8">
                 Ready to experience the premium difference in ceiling design?
               </p>
               <Link to="/contact">
                 <Button 
                   size="lg" 
-                  className="text-lg px-12 py-7 bg-primary text-charcoal hover:bg-gold-soft hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary/30"
+                  className="text-lg px-12 py-7 bg-primary hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary/30"
                 >
                   Start Your Premium Project
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
