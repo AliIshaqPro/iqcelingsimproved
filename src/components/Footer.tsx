@@ -1,159 +1,114 @@
-import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
-import logo from "@/assets/logo.png";
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
+import { Clock, Database, Shield, Zap, BarChart3, Bookmark } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+export function Footer() {
+  const systemInfo = {
+    version: "v2.1.0",
+    lastBackup: "2 hours ago",
+    uptime: "99.8%",
+    storageUsed: "45%"
+  };
 
   return (
-    <footer className="relative bg-gradient-to-b from-card via-background to-background/95 border-t border-primary/20 overflow-hidden">
-      {/* Enhanced Decorative Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container mx-auto px-4 py-16 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          {/* Company Info with Logo */}
-          <div className="space-y-6 lg:col-span-2">
-            <Link to="/" className="inline-block group relative">
-              <div className="absolute inset-0 bg-primary/20 blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
-              <img 
-                src={logo} 
-                alt="IQ Ceilings Logo" 
-                className="h-16 w-auto transition-all duration-500 group-hover:scale-110 relative z-10 drop-shadow-[0_0_20px_rgba(var(--primary),0.4)]"
-              />
-            </Link>
-            <p className="text-muted-foreground leading-relaxed max-w-md">
-              25 years of excellence in false ceiling solutions. Delivering quality and innovation 
-              that transforms spaces into extraordinary experiences.
-            </p>
-            <div className="flex gap-4">
-              <a 
-                href="#" 
-                className="relative w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 hover:scale-110 hover:rotate-12 group overflow-hidden"
-                aria-label="Facebook"
-              >
-                <span className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Facebook size={20} className="relative z-10" />
-              </a>
-              <a 
-                href="#" 
-                className="relative w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 hover:scale-110 hover:rotate-12 group overflow-hidden"
-                aria-label="Instagram"
-              >
-                <span className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Instagram size={20} className="relative z-10" />
-              </a>
-              <a 
-                href="#" 
-                className="relative w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 hover:scale-110 hover:rotate-12 group overflow-hidden"
-                aria-label="LinkedIn"
-              >
-                <span className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Linkedin size={20} className="relative z-10" />
-              </a>
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-700">
+      {/* Admin Footer Content */}
+      <div className="px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* System Status */}
+          <div className="space-y-3">
+            <h4 className="text-white font-semibold flex items-center gap-2">
+              <Shield className="h-4 w-4 text-green-400" />
+              System Status
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>System Uptime:</span>
+                <Badge className="bg-green-600 text-white text-xs">{systemInfo.uptime}</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span>Storage Used:</span>
+                <span className="text-slate-400">{systemInfo.storageUsed}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Last Backup:</span>
+                <span className="text-slate-400">{systemInfo.lastBackup}</span>
+              </div>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <h4 className="font-bold text-lg text-foreground relative inline-block group">
-              Quick Links
-              <span className="absolute -bottom-2 left-0 w-12 h-0.5 bg-primary group-hover:w-full transition-all duration-500"></span>
+          {/* Quick Actions */}
+          <div className="space-y-3">
+            <h4 className="text-white font-semibold flex items-center gap-2">
+              <Zap className="h-4 w-4 text-blue-400" />
+              Quick Actions
             </h4>
-            <ul className="space-y-3 pt-2">
+            <div className="space-y-2">
               {[
-                { to: "/", label: "Home" },
-                { to: "/about", label: "About Us" },
-                { to: "/projects", label: "Projects" },
-                { to: "/gallery", label: "Gallery" },
-                { to: "/contact", label: "Contact" },
-              ].map((link) => (
-                <li key={link.to}>
-                  <Link 
-                    to={link.to} 
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 flex items-center group"
-                  >
-                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
-                    {link.label}
-                  </Link>
-                </li>
+                'Export Daily Report',
+                'Backup Database',
+                'Generate Invoice',
+                'Stock Alert Settings'
+              ].map((action) => (
+                <Button
+                  key={action}
+                  variant="ghost"
+                  className="h-auto p-0 text-slate-400 hover:text-white justify-start text-sm"
+                >
+                  {action}
+                </Button>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Contact Info */}
-          <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <h4 className="font-bold text-lg text-foreground relative inline-block group">
-              Contact Us
-              <span className="absolute -bottom-2 left-0 w-12 h-0.5 bg-primary group-hover:w-full transition-all duration-500"></span>
+          {/* Admin Tools */}
+          <div className="space-y-3">
+            <h4 className="text-white font-semibold flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-purple-400" />
+              Admin Tools
             </h4>
-            <ul className="space-y-4 pt-2">
-              <li className="flex items-start gap-3 group">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Phone size={18} className="text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Call Us</p>
-                  <a 
-                    href="tel:+923458783923" 
-                    className="text-foreground hover:text-primary transition-colors font-medium"
-                  >
-                    +92 345 8783923
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Mail size={18} className="text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Email Us</p>
-                  <a 
-                    href="mailto:aliishaqsandho@gmail.com" 
-                    className="text-foreground hover:text-primary transition-colors font-medium break-all hover:underline cursor-pointer"
-                  >
-                    aliishaqsandho@gmail.com
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <MapPin size={18} className="text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Location</p>
-                  <span className="text-foreground font-medium">Pakistan</span>
-                </div>
-              </li>
-            </ul>
+            <div className="space-y-2">
+              {[
+                'Data Analytics',
+                'User Activity Log',
+                'Performance Monitor',
+                'Error Reports'
+              ].map((tool) => (
+                <Button
+                  key={tool}
+                  variant="ghost"
+                  className="h-auto p-0 text-slate-400 hover:text-white justify-start text-sm"
+                >
+                  {tool}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Bar with animation */}
-        <div className="border-t border-primary/20 pt-8 mt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <p className="text-muted-foreground text-sm text-center md:text-left flex items-center gap-2">
-              © {currentYear} IQ Ceilings. All rights reserved. 
-              <span className="hidden md:inline text-primary">|</span>
-              <span className="text-primary font-semibold">25 Years of Excellence</span>
+      {/* Footer Bottom */}
+      <div className="border-t border-slate-700 px-6 py-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4 text-sm">
+            <p className="text-slate-400">
+              © 2024 Usman Hardware Admin Panel
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Privacy Policy
-              </Link>
-              <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Terms of Service
-              </Link>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-blue-400" />
+              <span className="text-slate-400">Session: Active</span>
             </div>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <Database className="h-4 w-4 text-emerald-400" />
+            <span>System Version</span>
+            <Badge className="bg-emerald-600 text-white text-xs">
+              {systemInfo.version}
+            </Badge>
           </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}
