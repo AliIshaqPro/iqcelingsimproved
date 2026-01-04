@@ -7,17 +7,13 @@ import {
   ShoppingCart, 
   TrendingUp,
   RefreshCw,
-  Calendar,
-  BarChart3,
-  FolderOpen
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { reportsApi } from "@/services/reportsApi";
-import { SalesOverviewTab } from "@/components/reports/SalesOverviewTab";
 import { TopProductsTab } from "@/components/reports/TopProductsTab";
 import { TopCustomersTab } from "@/components/reports/TopCustomersTab";
-import { CategoryPerformanceTab } from "@/components/reports/CategoryPerformanceTab";
 import { ProductSalesTab } from "@/components/reports/ProductSalesTab";
 import { CustomerPurchasesTab } from "@/components/reports/CustomerPurchasesTab";
 
@@ -49,18 +45,13 @@ const getYearOptions = () => {
 };
 
 export const ReportsContent = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("top-products");
   
   // Default to December 2025 (where data exists) instead of current month
   const [selectedMonth, setSelectedMonth] = useState(12);
   const [selectedYear, setSelectedYear] = useState(2025);
 
   // Fetch report data with year/month parameters for server-side filtering
-  const { data: salesOverview = [], isLoading: loadingOverview, refetch: refetchOverview } = useQuery({
-    queryKey: ['monthly-sales-overview', selectedYear, selectedMonth],
-    queryFn: () => reportsApi.getMonthlySalesOverview({ year: selectedYear, month: selectedMonth }),
-  });
-
   const { data: topProducts = [], isLoading: loadingTopProducts, refetch: refetchTopProducts } = useQuery({
     queryKey: ['monthly-top-products', selectedYear, selectedMonth],
     queryFn: () => reportsApi.getMonthlyTopProducts({ year: selectedYear, month: selectedMonth }),
@@ -69,11 +60,6 @@ export const ReportsContent = () => {
   const { data: topCustomers = [], isLoading: loadingTopCustomers, refetch: refetchTopCustomers } = useQuery({
     queryKey: ['monthly-top-customers', selectedYear, selectedMonth],
     queryFn: () => reportsApi.getMonthlyTopCustomers({ year: selectedYear, month: selectedMonth }),
-  });
-
-  const { data: categoryPerformance = [], isLoading: loadingCategories, refetch: refetchCategories } = useQuery({
-    queryKey: ['monthly-category-performance', selectedYear, selectedMonth],
-    queryFn: () => reportsApi.getMonthlyCategoryPerformance({ year: selectedYear, month: selectedMonth }),
   });
 
   const { data: productSales = [], isLoading: loadingProductSales, refetch: refetchProductSales } = useQuery({
@@ -87,10 +73,8 @@ export const ReportsContent = () => {
   });
 
   const handleRefreshAll = () => {
-    refetchOverview();
     refetchTopProducts();
     refetchTopCustomers();
-    refetchCategories();
     refetchProductSales();
     refetchCustomerPurchases();
   };
@@ -145,11 +129,7 @@ export const ReportsContent = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto gap-1 bg-muted p-1">
-          <TabsTrigger value="overview" className="gap-2 data-[state=active]:bg-background text-xs sm:text-sm">
-            <BarChart3 className="h-4 w-4" />
-            <span className="hidden sm:inline">Overview</span>
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1 bg-muted p-1">
           <TabsTrigger value="top-products" className="gap-2 data-[state=active]:bg-background text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4" />
             <span className="hidden sm:inline">Top Products</span>
@@ -157,10 +137,6 @@ export const ReportsContent = () => {
           <TabsTrigger value="top-customers" className="gap-2 data-[state=active]:bg-background text-xs sm:text-sm">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Top Customers</span>
-          </TabsTrigger>
-          <TabsTrigger value="categories" className="gap-2 data-[state=active]:bg-background text-xs sm:text-sm">
-            <FolderOpen className="h-4 w-4" />
-            <span className="hidden sm:inline">Categories</span>
           </TabsTrigger>
           <TabsTrigger value="product-sales" className="gap-2 data-[state=active]:bg-background text-xs sm:text-sm">
             <Package className="h-4 w-4" />
@@ -171,13 +147,6 @@ export const ReportsContent = () => {
             <span className="hidden sm:inline">Customers</span>
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="overview" className="mt-6">
-          <SalesOverviewTab 
-            data={salesOverview} 
-            isLoading={loadingOverview} 
-          />
-        </TabsContent>
 
         <TabsContent value="top-products" className="mt-6">
           <TopProductsTab 
@@ -194,13 +163,6 @@ export const ReportsContent = () => {
             isLoading={loadingTopCustomers}
             monthLabel={monthLabel}
             year={selectedYear}
-          />
-        </TabsContent>
-
-        <TabsContent value="categories" className="mt-6">
-          <CategoryPerformanceTab 
-            data={categoryPerformance} 
-            isLoading={loadingCategories} 
           />
         </TabsContent>
 
