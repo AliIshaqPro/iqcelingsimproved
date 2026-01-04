@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, CreditCard, Banknote, AlertCircle } from "lucide-react";
+import { Users, Search, CreditCard, Banknote, AlertCircle, Eye } from "lucide-react";
 import { MonthlyCustomerPurchase } from "@/services/reportsApi";
+import CustomerDetailsModal from "@/components/reports/CustomerDetailsModal";
 
 interface CustomerPurchasesTabProps {
   data: MonthlyCustomerPurchase[];
@@ -16,6 +18,7 @@ interface CustomerPurchasesTabProps {
 
 const formatCurrency = (value: string | number) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return 'Rs 0';
   return new Intl.NumberFormat('en-PK', {
     style: 'currency',
     currency: 'PKR',
@@ -27,6 +30,10 @@ const formatCurrency = (value: string | number) => {
 export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: CustomerPurchasesTabProps) {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("value");
+  const [customerDetailsModal, setCustomerDetailsModal] = useState<{
+    open: boolean;
+    customer: any;
+  }>({ open: false, customer: null });
 
   if (isLoading) {
     return (
@@ -71,7 +78,22 @@ export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: Cust
   const totalPurchases = filteredData.reduce((sum, c) => sum + parseFloat(c.total_purchase_value), 0);
   const totalOutstanding = filteredData.reduce((sum, c) => sum + parseFloat(c.outstanding_balance), 0);
   const totalCash = filteredData.reduce((sum, c) => sum + parseFloat(c.cash_purchases), 0);
-  const totalCredit = filteredData.reduce((sum, c) => sum + parseFloat(c.credit_purchases), 0);
+  
+  // Credit sales = Total Purchases - Cash Purchases (this is the correct calculation)
+  const totalCredit = totalPurchases - totalCash;
+
+  const handleViewDetails = (customer: MonthlyCustomerPurchase) => {
+    // Convert to the format expected by CustomerDetailsModal
+    const customerForModal = {
+      id: customer.customer_id,
+      name: customer.customer_name,
+      phone: customer.customer_phone,
+      balance: parseFloat(customer.outstanding_balance),
+      totalPurchases: parseFloat(customer.total_purchase_value),
+      totalOrders: customer.times_purchased,
+    };
+    setCustomerDetailsModal({ open: true, customer: customerForModal });
+  };
 
   return (
     <div className="space-y-6">
@@ -91,45 +113,45 @@ export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: Cust
         </Badge>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - Better color differentiation */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20">
+        <Card className="bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-400">Total Purchases</CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalPurchases)}</div>
+            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(totalPurchases)}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cash Sales</CardTitle>
-            <Banknote className="h-4 w-4 text-emerald-500" />
+            <CardTitle className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Cash Sales</CardTitle>
+            <Banknote className="h-4 w-4 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(totalCash)}</div>
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{formatCurrency(totalCash)}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
+        <Card className="bg-gradient-to-br from-violet-500/10 via-violet-500/5 to-transparent border-violet-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Credit Sales</CardTitle>
-            <CreditCard className="h-4 w-4 text-blue-500" />
+            <CardTitle className="text-sm font-medium text-violet-700 dark:text-violet-400">Credit Sales</CardTitle>
+            <CreditCard className="h-4 w-4 text-violet-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totalCredit)}</div>
+            <div className="text-2xl font-bold text-violet-700 dark:text-violet-300">{formatCurrency(totalCredit)}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent border-orange-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Outstanding</CardTitle>
-            <AlertCircle className="h-4 w-4 text-orange-500" />
+            <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-400">Outstanding</CardTitle>
+            <AlertCircle className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{formatCurrency(totalOutstanding)}</div>
+            <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{formatCurrency(totalOutstanding)}</div>
           </CardContent>
         </Card>
       </div>
@@ -179,12 +201,13 @@ export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: Cust
                   <TableHead className="text-right font-semibold">Items</TableHead>
                   <TableHead className="text-right font-semibold">Cash</TableHead>
                   <TableHead className="text-right font-semibold">Total</TableHead>
-                  <TableHead className="text-right font-semibold">Credit/Outstanding</TableHead>
+                  <TableHead className="text-right font-semibold">Outstanding</TableHead>
+                  <TableHead className="text-center w-16 font-semibold">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredData.map((customer) => {
-                  const creditPlusOutstanding = parseFloat(customer.credit_purchases) + parseFloat(customer.outstanding_balance);
+                  const outstanding = parseFloat(customer.outstanding_balance) || 0;
                   return (
                     <TableRow 
                       key={`${customer.customer_id}-${customer.month}`}
@@ -201,9 +224,19 @@ export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: Cust
                       <TableCell className="text-right text-emerald-600 tabular-nums">{formatCurrency(customer.cash_purchases)}</TableCell>
                       <TableCell className="text-right font-semibold tabular-nums">{formatCurrency(customer.total_purchase_value)}</TableCell>
                       <TableCell className="text-right">
-                        <span className={creditPlusOutstanding > 0 ? 'text-orange-600 font-medium tabular-nums' : 'tabular-nums'}>
-                          {formatCurrency(creditPlusOutstanding)}
+                        <span className={outstanding > 0 ? 'text-orange-600 font-medium tabular-nums' : 'text-muted-foreground tabular-nums'}>
+                          {formatCurrency(outstanding)}
                         </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleViewDetails(customer)}
+                          className="h-8 w-8"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
@@ -213,6 +246,13 @@ export function CustomerPurchasesTab({ data, isLoading, monthLabel, year }: Cust
           </div>
         </CardContent>
       </Card>
+
+      {/* Customer Details Modal */}
+      <CustomerDetailsModal
+        customer={customerDetailsModal.customer}
+        open={customerDetailsModal.open}
+        onOpenChange={(open) => setCustomerDetailsModal({ ...customerDetailsModal, open })}
+      />
     </div>
   );
 }

@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, Search, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { Package, Search, TrendingUp, TrendingDown, DollarSign, Eye } from "lucide-react";
 import { MonthlyProductSale } from "@/services/reportsApi";
+import ProductDetailsModal from "@/components/reports/ProductDetailsModal";
 
 interface ProductSalesTabProps {
   data: MonthlyProductSale[];
@@ -16,6 +18,7 @@ interface ProductSalesTabProps {
 
 const formatCurrency = (value: string | number) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return 'Rs 0';
   return new Intl.NumberFormat('en-PK', {
     style: 'currency',
     currency: 'PKR',
@@ -29,6 +32,10 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState("revenue");
+  const [productDetailsModal, setProductDetailsModal] = useState<{
+    open: boolean;
+    product: any;
+  }>({ open: false, product: null });
 
   if (isLoading) {
     return (
@@ -57,8 +64,7 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
   const filteredData = data
     .filter(p => 
       (categoryFilter === "all" || p.category_name === categoryFilter) &&
-      (p.product_name.toLowerCase().includes(search.toLowerCase()) ||
-       p.sku.toLowerCase().includes(search.toLowerCase()))
+      (p.product_name.toLowerCase().includes(search.toLowerCase()))
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -79,6 +85,22 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
   const totalProfit = filteredData.reduce((sum, p) => sum + parseFloat(p.total_profit), 0);
   const avgMargin = filteredData.reduce((sum, p) => sum + p.profit_margin_percent, 0) / (filteredData.length || 1);
 
+  const handleViewDetails = (product: MonthlyProductSale) => {
+    // Convert to the format expected by ProductDetailsModal
+    const productForModal = {
+      id: product.product_id,
+      name: product.product_name,
+      sku: product.sku,
+      category: product.category_name,
+      price: parseFloat(product.current_price),
+      costPrice: parseFloat(product.current_cost),
+      stock: 0, // Not available in this data
+      unit: product.unit,
+      status: product.product_status,
+    };
+    setProductDetailsModal({ open: true, product: productForModal });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -97,35 +119,35 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
         </Badge>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - Better color differentiation */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-400">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
+            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(totalRevenue)}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
+            <CardTitle className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Total Profit</CardTitle>
+            <TrendingUp className="h-4 w-4 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatCurrency(totalProfit)}</div>
+            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{formatCurrency(totalProfit)}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-violet-500/10 via-violet-500/5 to-transparent border-violet-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Margin</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-violet-700 dark:text-violet-400">Avg Margin</CardTitle>
+            <TrendingUp className="h-4 w-4 text-violet-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgMargin.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-violet-700 dark:text-violet-300">{avgMargin.toFixed(1)}%</div>
           </CardContent>
         </Card>
       </div>
@@ -137,7 +159,7 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name or SKU..."
+                placeholder="Search by name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -177,14 +199,13 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
               <TableHeader>
                 <TableRow>
                   <TableHead>Product</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Category</TableHead>
                   <TableHead className="text-right">Price</TableHead>
                   <TableHead className="text-right">Cost</TableHead>
                   <TableHead className="text-right">Qty Sold</TableHead>
                   <TableHead className="text-right">Revenue</TableHead>
                   <TableHead className="text-right">Profit</TableHead>
                   <TableHead className="text-right">Margin</TableHead>
+                  <TableHead className="text-center w-16">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -200,10 +221,6 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{product.sku}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{product.category_name}</Badge>
-                    </TableCell>
                     <TableCell className="text-right">{formatCurrency(product.current_price)}</TableCell>
                     <TableCell className="text-right text-muted-foreground">{formatCurrency(product.current_cost)}</TableCell>
                     <TableCell className="text-right">
@@ -211,19 +228,29 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
                     </TableCell>
                     <TableCell className="text-right font-medium">{formatCurrency(product.total_revenue)}</TableCell>
                     <TableCell className="text-right">
-                      <span className={parseFloat(product.total_profit) >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      <span className={parseFloat(product.total_profit) >= 0 ? 'text-emerald-600' : 'text-red-600'}>
                         {formatCurrency(product.total_profit)}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {parseFloat(String(product.profit_margin_percent)) >= 20 ? (
-                          <TrendingUp className="h-3 w-3 text-green-500" />
+                          <TrendingUp className="h-3 w-3 text-emerald-500" />
                         ) : (
                           <TrendingDown className="h-3 w-3 text-orange-500" />
                         )}
                         <span>{parseFloat(String(product.profit_margin_percent)).toFixed(1)}%</span>
                       </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleViewDetails(product)}
+                        className="h-8 w-8"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -232,6 +259,13 @@ export function ProductSalesTab({ data, isLoading, monthLabel, year }: ProductSa
           </div>
         </CardContent>
       </Card>
+
+      {/* Product Details Modal */}
+      <ProductDetailsModal
+        product={productDetailsModal.product}
+        open={productDetailsModal.open}
+        onOpenChange={(open) => setProductDetailsModal({ ...productDetailsModal, open })}
+      />
     </div>
   );
 }

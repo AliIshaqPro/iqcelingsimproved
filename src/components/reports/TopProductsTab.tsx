@@ -14,6 +14,7 @@ interface TopProductsTabProps {
 
 const formatCurrency = (value: string | number) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return 'Rs 0';
   return new Intl.NumberFormat('en-PK', {
     style: 'currency',
     currency: 'PKR',
@@ -22,17 +23,23 @@ const formatCurrency = (value: string | number) => {
   }).format(num);
 };
 
+const formatNumber = (value: number | string) => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return '0';
+  return num.toLocaleString('en-PK');
+};
+
 const CHART_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(var(--primary))',
-  'hsl(var(--chart-1) / 0.8)',
-  'hsl(var(--chart-2) / 0.8)',
-  'hsl(var(--chart-3) / 0.8)',
-  'hsl(var(--chart-4) / 0.8)',
+  '#3b82f6', // Blue
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#ef4444', // Red
+  '#8b5cf6', // Purple
+  '#06b6d4', // Cyan
+  '#ec4899', // Pink
+  '#84cc16', // Lime
+  '#f97316', // Orange
+  '#6366f1', // Indigo
 ];
 
 export function TopProductsTab({ data, isLoading, monthLabel, year }: TopProductsTabProps) {
@@ -61,13 +68,18 @@ export function TopProductsTab({ data, isLoading, monthLabel, year }: TopProduct
   const chartData = data.slice(0, 10).map((p, index) => ({
     name: p.product_name.length > 20 ? p.product_name.substring(0, 20) + '...' : p.product_name,
     fullName: p.product_name,
-    revenue: parseFloat(p.total_revenue),
-    quantity: p.total_quantity,
+    revenue: parseFloat(p.total_revenue) || 0,
+    quantity: typeof p.total_quantity === 'number' ? p.total_quantity : parseInt(String(p.total_quantity)) || 0,
     color: CHART_COLORS[index % CHART_COLORS.length],
   }));
 
-  const totalRevenue = data.reduce((sum, p) => sum + parseFloat(p.total_revenue), 0);
-  const totalQuantity = data.reduce((sum, p) => sum + p.total_quantity, 0);
+  const totalRevenue = data.reduce((sum, p) => sum + (parseFloat(p.total_revenue) || 0), 0);
+  const totalQuantity = data.reduce((sum, p) => {
+    const qty = typeof p.total_quantity === 'number' ? p.total_quantity : parseInt(String(p.total_quantity)) || 0;
+    return sum + qty;
+  }, 0);
+
+  const topProduct = data[0];
 
   return (
     <div className="space-y-6">
@@ -87,41 +99,41 @@ export function TopProductsTab({ data, isLoading, monthLabel, year }: TopProduct
         </Badge>
       </div>
 
-      {/* Summary Cards - Beautiful gradient cards */}
+      {/* Summary Cards - Better color differentiation */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <Card className="bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-foreground/80">Total Revenue</CardTitle>
-            <TrendingUp className="h-5 w-5 text-primary" />
+            <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-400">Total Revenue</CardTitle>
+            <TrendingUp className="h-5 w-5 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{formatCurrency(totalRevenue)}</div>
-            <p className="text-xs text-muted-foreground mt-1">From top products this month</p>
+            <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatCurrency(totalRevenue)}</div>
+            <p className="text-xs text-blue-600/70 mt-1">From top products this month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-chart-2/10 via-chart-2/5 to-transparent border-chart-2/20 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-chart-2/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <Card className="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/20 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-foreground/80">Total Quantity</CardTitle>
-            <Package className="h-5 w-5 text-chart-2" />
+            <CardTitle className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Total Quantity</CardTitle>
+            <Package className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{totalQuantity.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">Units sold this month</p>
+            <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">{formatNumber(totalQuantity)}</div>
+            <p className="text-xs text-emerald-600/70 mt-1">Units sold this month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent border-yellow-500/20 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <Card className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-amber-500/20 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-foreground/80">Top Seller</CardTitle>
-            <Crown className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="text-sm font-medium text-amber-700 dark:text-amber-400">Top Seller</CardTitle>
+            <Crown className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold text-foreground truncate">{data[0]?.product_name}</div>
-            <p className="text-sm text-muted-foreground mt-1">{formatCurrency(data[0]?.total_revenue || 0)}</p>
+            <div className="text-xl font-bold text-amber-700 dark:text-amber-300 truncate">{topProduct?.product_name}</div>
+            <p className="text-sm text-amber-600/70 mt-1">{formatCurrency(topProduct?.total_revenue || 0)}</p>
           </CardContent>
         </Card>
       </div>
@@ -240,7 +252,7 @@ export function TopProductsTab({ data, isLoading, monthLabel, year }: TopProduct
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{product.times_sold}</TableCell>
                   <TableCell className="text-right tabular-nums font-medium">
-                    {product.total_quantity.toLocaleString()}
+                    {formatNumber(product.total_quantity)}
                   </TableCell>
                   <TableCell className="text-right">
                     <span className="font-semibold text-primary">{formatCurrency(product.total_revenue)}</span>
